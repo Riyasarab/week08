@@ -176,6 +176,10 @@ jobs:
           docker scout cves \
             ${{ vars.ACR_LOGIN_SERVER }}/${{ matrix.image }}:${{ github.sha }} \
             --only-severity critical,high
+      - name: Docker Scout recommendations
+        run: |
+          docker scout recommendations \
+            ${{ vars.ACR_LOGIN_SERVER }}/${{ matrix.image }}:${{ github.sha }}  
 
       - name: Push Docker image with commit SHA
         run: |

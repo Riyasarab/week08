@@ -197,3 +197,22 @@ cython_debug/
 .cursorindexingignore
 
 node_modules/
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraform.lock.hcl
+
+# Accidental Docker/build output files
+=
+CACHED
+\[auth]
+\[build
+\[internal]
+\[stage-1
+exporting
+naming
+resolve
+transferring
+unpacking

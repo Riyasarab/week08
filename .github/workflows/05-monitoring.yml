@@ -1,0 +1,48 @@
+name: 05 - Monitoring
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-monitoring:
+    name: Deploy Prometheus and Grafana
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Azure
+        uses: azure/login@v3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials \
+            --resource-group ${{ vars.AKS_RESOURCE_GROUP }} \
+            --name ${{ vars.AKS_CLUSTER_NAME }} \
+            --overwrite-existing
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Add Prometheus Helm repository
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+
+      - name: Deploy Prometheus and Grafana
+        run: |
+          helm upgrade --install prometheus \
+            prometheus-community/kube-prometheus-stack \
+            --namespace monitoring \
+            --create-namespace \
+            --wait \
+            --timeout 10m
+
+      - name: Validate monitoring deployment
+        run: |
+          kubectl get pods -n monitoring
+          kubectl get svc -n monitoring
+          helm list -n monitoring
